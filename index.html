@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clear Air</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#1D7489">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Clear Air">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF2F5;--surface:#FFFFFF;--ink:#14263A;--muted:#55687A;--line:#CFDDE5;
+  --air:#1D7489;--air-ink:#FFFFFF;--air-soft:#D3E9EF;--amber:#A86A00;--amber-soft:#F7EBCF;--smoke:#8A97A3;--alert:#A33A2B;--alert-soft:#F6DFDA;
+  --head:"Lexend","Trebuchet MS",system-ui,sans-serif;
+  --body:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0F1A24;--surface:#172633;--ink:#E4EEF3;--muted:#9FB2C0;--line:#29404F;
+  --air:#6FC3D6;--air-ink:#0B1820;--air-soft:#1C3A46;--amber:#E5AE48;--amber-soft:#3A2E14;--smoke:#7C8B97;--alert:#E78A7C;--alert-soft:#3D211D;}}
+:root[data-theme="dark"]{
+  --bg:#0F1A24;--surface:#172633;--ink:#E4EEF3;--muted:#9FB2C0;--line:#29404F;
+  --air:#6FC3D6;--air-ink:#0B1820;--air-soft:#1C3A46;--amber:#E5AE48;--amber-soft:#3A2E14;--smoke:#7C8B97;--alert:#E78A7C;--alert-soft:#3D211D;}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.5;-webkit-text-size-adjust:100%}
+h1,h2,h3{font-family:var(--head);line-height:1.15;margin:0;font-weight:700}
+h1{font-size:28px}h2{font-size:21px;margin:26px 0 10px}h3{font-size:17px;font-weight:600}
+p{margin:0 0 12px}button{font:inherit;color:inherit}
+main{max-width:620px;margin:0 auto;padding:18px 18px 120px}
+.view{display:none}.view.on{display:block}
+.sub{color:var(--muted);font-size:15.5px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.btn{border:0;border-radius:12px;padding:12px 18px;background:var(--air);color:var(--air-ink);font-weight:700;cursor:pointer;min-height:48px}
+.btn.alt{background:var(--air-soft);color:var(--ink)}
+.btn.amber{background:var(--amber);color:#fff}
+.btn.big{width:100%;font-size:19px;min-height:60px;border-radius:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+.tab{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0;font-size:12px;color:var(--muted);cursor:pointer;border-radius:10px}
+.tab svg{width:23px;height:23px}
+.tab.on{color:var(--air);font-weight:700}
+/* hero: the clearing sky */
+.hero{position:relative;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,var(--smoke) 0%,var(--air) 100%);color:#fff;padding:22px 20px 20px;margin:10px 0 14px}
+.hero .haze{position:absolute;inset:0;background:var(--smoke);pointer-events:none}
+.hero>*{position:relative}
+.hero .lbl{font-size:16px;opacity:.95}
+.hero .num{font-family:var(--head);font-weight:700;font-size:58px;line-height:1;margin:6px 0 4px;letter-spacing:-.02em}
+.hero .numsm{font-family:var(--head);font-weight:600;font-size:22px}
+.hero .bar{background:rgba(255,255,255,.3)}.hero .bar i{background:#fff}
+.bar{height:10px;background:var(--air-soft);border-radius:10px;overflow:hidden;margin:10px 0 6px}
+.bar i{display:block;height:100%;background:var(--air);border-radius:10px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.stat b{font-family:var(--head);font-size:24px;display:block;line-height:1.2}
+.stat span{color:var(--muted);font-size:15px}
+.counter{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.counter .n{font-family:var(--head);font-size:44px;font-weight:700;line-height:1}
+.field{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field label{flex:1}
+.field input,.field select{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:44px;max-width:56%}
+.field input[type=number]{width:110px}
+.log{list-style:none;padding:0;margin:0}
+.log li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.x{border:0;background:none;color:var(--muted);font-size:14px;cursor:pointer;padding:8px;text-decoration:underline}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:16px;cursor:pointer;min-height:42px}
+.chip[aria-pressed="true"]{background:var(--air);border-color:var(--air);color:var(--air-ink);font-weight:700}
+.note{background:var(--amber-soft);border-radius:14px;padding:12px 14px;font-size:16px;margin:14px 0}
+.warn{background:var(--alert-soft);border-radius:14px;padding:12px 14px;font-size:16px;margin:14px 0}
+.mile{display:grid;grid-template-columns:22px 1fr;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.mile .dotm{width:18px;height:18px;border-radius:50%;border:3px solid var(--line);margin-top:4px}
+.mile.done .dotm{background:var(--air);border-color:var(--air)}
+.mile.next .dotm{border-color:var(--air)}
+.mile .t{font-family:var(--head);font-weight:600;font-size:16px}
+.mile.done .t{color:var(--air)}
+.tips li{margin-bottom:8px}
+/* breathing */
+.breath{display:flex;flex-direction:column;align-items:center;padding:12px 0}
+.circle{width:180px;height:180px;border-radius:50%;background:var(--air-soft);display:flex;align-items:center;justify-content:center;transform:scale(.6);transition:transform 4s ease-in-out}
+.circle.in{transform:scale(1)}
+.circle span{font-family:var(--head);font-weight:600;font-size:20px;color:var(--ink)}
+.ctimer{font-family:var(--head);font-size:34px;font-weight:700;margin-top:10px}
+@media (prefers-reduced-motion:reduce){.circle{transition:none}}
+.who{font-size:15px;color:var(--muted)}
+.syncmsg{font-size:13px;color:var(--muted);margin-top:24px}
+</style>
+</head>
+<body>
+<main>
+<!-- TODAY -->
+<section id="v-today" class="view on" aria-labelledby="h-today">
+  <h1 id="h-today">Clear Air</h1>
+  <p class="who" id="whoLine"></p>
+  <div id="todayBody"></div>
+</section>
+
+<!-- CRAVINGS -->
+<section id="v-crave" class="view" aria-labelledby="h-crave">
+  <h1 id="h-crave">Craving help</h1>
+  <p class="sub">A craving can last about 5 minutes. Breathe with the circle until the timer ends.</p>
+  <div class="card breath">
+    <div class="circle" id="circle"><span id="circleTxt">Ready</span></div>
+    <div class="ctimer" id="ctimer">5:00</div>
+    <div class="chips" id="soundOpt" style="justify-content:center" aria-label="Sound"><button class="chip" data-snd="breath">Breath sound</button><button class="chip" data-snd="tone">Soft tone</button><button class="chip" data-snd="voice">Spoken words</button><button class="chip" data-snd="off">No sound</button></div>
+    <div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="startBreath">Start 5 minutes</button><button class="btn alt" id="stopBreath" hidden>Stop</button></div>
+  </div>
+  <div class="card">
+    <h3>Log this craving</h3>
+    <p class="sub" style="margin:6px 0 0">How strong?</p>
+    <div class="chips" id="cStrength"></div>
+    <p class="sub" style="margin:6px 0 0">What set it off?</p>
+    <div class="chips" id="cTrigger"></div>
+    <p class="sub" style="margin:6px 0 0">Did you smoke?</p>
+    <div class="chips" id="cSmoked"></div>
+    <button class="btn" id="saveCrave" style="margin-top:8px">Save craving</button>
+    <p class="sub" id="craveMsg" role="status" style="margin:8px 0 0"></p>
+  </div>
+  <h2>Five-minute things to do</h2>
+  <div class="card"><ul class="tips" style="margin:0;padding-left:20px">
+    <li>Go for a short walk or stretch. Even 5 minutes of activity can cut cravings.</li>
+    <li>Drink a glass of water.</li>
+    <li>Use a fast-acting nicotine product (gum, lozenge or spray) if you have one.</li>
+    <li>Say to yourself: "I won't even have a single drag."</li>
+    <li>Keep your hands busy: wash up, clear a drawer, send a message to a friend.</li>
+    <li>Read your reasons for quitting, below.</li>
+  </ul></div>
+  <h2>My reasons for quitting</h2>
+  <div class="card"><ul class="log" id="reasons"></ul>
+    <div class="row" style="margin-top:10px"><input id="reasonIn" placeholder="Add a reason" style="flex:1;font:inherit;padding:10px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:46px"><button class="btn" id="addReason">Add</button></div>
+  </div>
+  <h2>What sets off my cravings</h2>
+  <div class="card" id="triggerStats"></div>
+  <h2>Craving log</h2>
+  <ul class="log" id="craveLog"></ul>
+</section>
+
+<!-- NRT -->
+<section id="v-nrt" class="view" aria-labelledby="h-nrt">
+  <h1 id="h-nrt">Nicotine replacement</h1>
+  <p class="sub">Log each patch, gum, lozenge or spray you use.</p>
+  <div class="card">
+    <p class="sub" style="margin:0">Product</p>
+    <div class="chips" id="nProduct"></div>
+    <div class="field"><label for="nStrength">Strength (as on the pack)</label><input id="nStrength" placeholder="e.g. 21 mg/24h"></div>
+    <button class="btn" id="saveNrt" style="margin-top:10px">Log it</button>
+    <p class="sub" id="nrtMsg" role="status" style="margin:8px 0 0"></p>
+  </div>
+  <div class="stats" id="nrtStats"></div>
+  <h2>Today</h2>
+  <ul class="log" id="nrtToday"></ul>
+  <h2>Last 14 days</h2>
+  <div class="card" id="nrtDays"></div>
+  <h2>Good to know</h2>
+  <div class="card">
+    <p>The NHS suggests a slow-acting patch for steady support, plus a fast-acting gum, lozenge or spray for sudden cravings.</p>
+    <p>When cutting down before a quit date, nicotine replacement helps stop you making up for fewer cigarettes by taking more and deeper puffs.</p>
+    <p style="margin:0">NHS advice is to use it for about 12 weeks, or as long as needed to stop you smoking again, and then reduce gradually.</p>
+    <div class="warn">Follow the instructions on the pack. Ask a pharmacist or doctor which product and strength suits you, especially if pregnant, breastfeeding or living with a health condition.</div>
+  </div>
+</section>
+
+<!-- HEALTH -->
+<section id="v-health" class="view" aria-labelledby="h-health">
+  <h1 id="h-health">Health milestones</h1>
+  <p class="sub" id="healthSub"></p>
+  <div id="milestones"></div>
+  <p class="sub" style="margin-top:14px">Milestones count from your last cigarette. Source: NHS Better Health, "What happens when you quit?"</p>
+</section>
+
+<!-- ME / SETUP -->
+<section id="v-me" class="view" aria-labelledby="h-me">
+  <h1 id="h-me">My plan</h1>
+  <div class="card">
+    <h3>How do you want to quit?</h3>
+    <div class="chips" id="sMode" style="margin-top:10px"><button class="chip" data-m="date">Stop on a set date</button><button class="chip" data-m="gradual">Cut down gradually</button></div>
+    <p class="sub" id="modeHelp" style="margin:4px 0 0"></p>
+  </div>
+  <div class="card">
+    <div class="field"><label for="sName">My name</label><input id="sName" placeholder="Optional"></div>
+    <div class="field"><label for="sPerDay">Cigarettes a day before starting</label><input id="sPerDay" type="number" min="1" max="100" inputmode="numeric"></div>
+    <div class="field" id="startRow"><label for="sStart">Start cutting down on</label><input id="sStart" type="date"></div>
+    <div class="field"><label for="sQuit">Quit date (stop completely)</label><input id="sQuit" type="date"></div>
+    <div class="field"><label for="sPrice">Price of a pack</label><input id="sPrice" type="number" min="0" step="0.01" inputmode="decimal"></div>
+    <div class="field"><label for="sPack">Cigarettes in a pack</label><input id="sPack" type="number" min="1" max="100" inputmode="numeric"></div>
+    <div class="field"><label for="sCur">Currency symbol</label><input id="sCur" maxlength="4" style="width:80px"></div>
+  </div>
+  <p class="sub" id="planMsg" role="status"></p>
+  <div class="note" id="cutNote">NHS Inform advises setting a quit date within 6 weeks of starting to cut down, and earlier is better. Cutting down on its own gives little or no health benefit. The benefit comes from stopping completely.</div>
+  <div class="card">
+    <h3>Start again</h3>
+    <p class="sub">Clears this person's plan and all logs on this account.</p>
+    <button class="btn alt" id="resetAll">Clear everything</button>
+  </div>
+  <p class="syncmsg" id="syncMsg">Saved on this phone.</p>
+</section>
+</main>
+
+<nav class="tabs" aria-label="Sections">
+  <button class="tab on" data-v="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Today</button>
+  <button class="tab" data-v="crave"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>Cravings</button>
+  <button class="tab" data-v="nrt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="7" width="16" height="10" rx="3"/><path d="M9 12h6"/></svg>NRT</button>
+  <button class="tab" data-v="health"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg>Health</button>
+  <button class="tab" data-v="me"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>My plan</button>
+</nav>
+
+<script>
+/* ---------- DATA ---------- */
+// NHS Better Health, "What happens when you quit?"
+const MILES=[
+ [20/60,"20 minutes","Your pulse rate is already starting to return to normal."],
+ [8,"8 hours","Your oxygen levels are recovering, and the harmful carbon monoxide level in your blood has halved."],
+ [48,"48 hours","Carbon monoxide levels have dropped to that of a non-smoker. Your lungs are clearing out mucus and your senses of taste and smell are improving."],
+ [72,"72 hours","Breathing feels easier as the bronchial tubes relax, and energy increases."],
+ [24*14,"2 to 12 weeks","Blood pumps through to your heart and muscles much better because circulation has improved."],
+ [24*91,"3 to 9 months","Coughs, wheezing and breathing problems improve as lung function increases by up to 10%."],
+ [24*365,"1 year","Your risk of heart attack has halved compared with a smoker's."],
+ [24*3652,"10 years","Your risk of death from lung cancer has halved compared with a smoker's."]
+];
+const TRIGGERS=["After a meal","Coffee or tea","Alcohol","Stress","Other smokers","Boredom","Waking up","Driving","Other"];
+const PRODUCTS=["Patch","Gum","Lozenge","Mouth spray","Inhalator","Other"];
+
+/* ---------- STATE ---------- */
+const KEY="clearAir.v1";
+const blank=()=>({name:"",perDay:null,start:null,quit:null,price:null,pack:20,cur:"$",sound:"breath",mode:"gradual",trackFrom:null,smoked:{},lastCig:null,cravings:[],nrt:[],reasons:[],updated:0});
+let S=blank();
+try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(blank(),JSON.parse(raw));}catch(e){}
+let dbRef=null,writing=false,pending=false,saveTimer=null;
+function save(){S.updated=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(saveTimer);saveTimer=setTimeout(pushDb,600);}
+async function pushDb(){
+  if(!dbRef)return;if(writing){pending=true;return;}writing=true;
+  try{await dbRef.set(JSON.parse(JSON.stringify(S)));setSync("Saved to your Claude account and this phone.");}
+  catch(e){setSync("Saved on this phone. Account sync isn't available right now.");}
+  writing=false;if(pending){pending=false;pushDb();}
+}
+function setSync(t){const el=document.getElementById("syncMsg");if(el)el.textContent=t;}
+(async()=>{try{
+  if(!window.claude||!window.claude.use)return;
+  const user=await window.claude.use("user"),db=await window.claude.use("db");if(!user||!db)return;
+  const uid=await user.id();if(!uid)return;
+  dbRef=db.doc("data/users/"+uid+"/state");
+  const snap=await dbRef.get();
+  if(snap.exists){const d=snap.data();if(d&&(d.updated||0)>(S.updated||0)){S=Object.assign(blank(),d);try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}else if((S.updated||0)>((d&&d.updated)||0))pushDb();}
+  else if(S.updated)pushDb();
+  setSync("Saved to your Claude account and this phone.");
+}catch(e){}})();
+
+/* ---------- HELPERS ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const iso=d=>{d=new Date(d);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+const D=s=>new Date(s+"T00:00:00");
+const DAY=864e5;
+const today=()=>iso(new Date());
+const fdate=s=>D(s).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"});
+const ftime=t=>new Date(t).toLocaleTimeString(undefined,{hour:"2-digit",minute:"2-digit"});
+const money=v=>(S.cur||"")+(Math.round(v*100)/100).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const ready=()=>S.perDay>0&&S.quit&&(S.mode==="date"||S.start);
+const fromDay=()=>{const st=S.mode==="date"?null:S.start;const a=[st,S.trackFrom].filter(Boolean).sort();return a.length?a[a.length-1]:today();};
+const perCig=()=>S.price>0&&S.pack>0?S.price/S.pack:0;
+function phase(){if(!ready())return "setup";const t=today();if(S.mode==="date")return t<S.quit?"countdown":"quit";if(t<S.start)return "before";if(t<S.quit)return "cut";return "quit";}
+function target(ds){ // daily target during cut-down: straight line from perDay to 0 on quit date
+  const total=Math.round((D(S.quit)-D(S.start))/DAY);if(total<=0)return 0;
+  const k=Math.round((D(ds)-D(S.start))/DAY);
+  return Math.max(0,Math.round(S.perDay*(1-k/total)));
+}
+function lastCigTime(){ // last cigarette: logged one, or quit-date midnight if none logged after it
+  const q=D(S.quit).getTime();
+  return Math.max(q,S.lastCig||0);
+}
+function dur(ms){ms=Math.max(0,ms);const d=Math.floor(ms/DAY),h=Math.floor(ms%DAY/36e5),m=Math.floor(ms%36e5/6e4);
+  return d?d+(d===1?" day ":" days ")+h+"h":h?h+"h "+m+"m":m+" min";}
+function totals(){
+  // money saved and cigarettes not smoked since start, vs the old daily amount
+  let notSmoked=0;const t=today();
+  const from=fromDay();
+  for(let d=D(from);iso(d)<=t;d=new Date(d.getTime()+DAY)){
+    const k=iso(d);const sm=S.smoked[k]||0;
+    let base=S.perDay;if(k===t){const frac=(Date.now()-D(t).getTime())/DAY;base=S.perDay*frac;}
+    notSmoked+=Math.max(0,base-sm);
+  }
+  return {notSmoked:Math.floor(notSmoked),saved:notSmoked*perCig()};
+}
+
+/* ---------- TODAY ---------- */
+function renderToday(){
+  $("whoLine").textContent=S.name?"Plan for "+S.name:"";
+  const p=phase();let h="";
+  if(p==="setup"){
+    h='<div class="card"><h3>Set up your plan</h3><p class="sub">Choose to stop on a set date or cut down gradually, then enter how much you smoke now and your quit date.</p><button class="btn" id="goMe">Set up my plan</button></div>';
+  }else if(p==="countdown"){
+    const n=Math.ceil((D(S.quit)-D(today()))/DAY),sm=S.smoked[today()]||0;
+    h='<div class="hero"><div class="haze" style="opacity:.75"></div><div class="lbl">Quit day</div><div class="num">'+n+'</div><div class="numsm">'+(n===1?"day":"days")+' to go, on '+esc(fdate(S.quit))+'</div></div>'+
+      '<div class="card"><h3>Getting ready</h3><ul style="margin:6px 0 0;padding-left:20px"><li>Get your nicotine replacement before quit day.</li><li>Write your reasons on the Cravings tab.</li><li>Think ahead to times that will be hard, and plan what you\'ll do.</li></ul></div>'+
+      '<div class="card counter"><div><h3>Smoked today: '+sm+'</h3><p class="sub" style="margin:0">Optional: tap to see how much you smoke before quit day.</p></div><div class="row" style="flex-wrap:nowrap"><button class="btn alt" id="minus" aria-label="Remove one">−</button><button class="btn amber" id="plus">+1</button></div></div>';
+  }else if(p==="before"){
+    h='<div class="hero"><div class="haze" style="opacity:.85"></div><div class="lbl">Cutting down starts</div><div class="num">'+Math.ceil((D(S.start)-D(today()))/DAY)+'</div><div class="numsm">'+(Math.ceil((D(S.start)-D(today()))/DAY)===1?"day":"days")+' to go, on '+esc(fdate(S.start))+'</div></div>'+
+      '<div class="card"><p style="margin:0">Quit date: <b>'+esc(fdate(S.quit))+'</b>. Use the time to stock up on nicotine replacement and write your reasons on the Cravings tab.</p></div>';
+  }else if(p==="cut"){
+    const t=today(),tg=target(t),sm=S.smoked[t]||0;
+    const daysLeft=Math.round((D(S.quit)-D(t))/DAY);
+    const total=Math.max(1,Math.round((D(S.quit)-D(S.start))/DAY));const done=total-daysLeft;
+    const haze=Math.max(.15,1-done/total);
+    h='<div class="hero"><div class="haze" style="opacity:'+haze.toFixed(2)+'"></div><div class="lbl">Today\'s limit</div><div class="num">'+sm+' <span style="font-size:30px;opacity:.85">of '+tg+'</span></div>'+
+      '<div class="numsm">'+(sm>tg?"Over today's limit. Tomorrow is a new day.":(tg-sm)+" left today")+'</div>'+
+      '<div class="bar"><i style="width:'+Math.round(done/total*100)+'%"></i></div><div class="lbl">'+daysLeft+(daysLeft===1?" day":" days")+' to quit day, '+esc(fdate(S.quit))+'</div></div>'+
+      '<div class="card counter"><div><h3>Smoked a cigarette?</h3><p class="sub" style="margin:0">Tap each time, to keep count honestly.</p></div><div class="row" style="flex-wrap:nowrap"><button class="btn alt" id="minus" aria-label="Remove one">−</button><button class="btn amber" id="plus">+1</button></div></div>';
+    const T=totals();
+    h+='<div class="stats"><div class="stat"><b>'+T.notSmoked+'</b><span>cigarettes not smoked</span></div><div class="stat"><b>'+(perCig()?money(T.saved):"–")+'</b><span>money saved</span></div></div><p class="sub" style="margin-top:8px">Counted from '+esc(fdate(fromDay()))+', the day you started logging, against your old '+S.perDay+' a day.</p>';
+    h+='<h2>Coming days</h2><div class="card"><ul class="log">'+[0,1,2,3,4,5,6].map(i=>{const d=iso(new Date(D(t).getTime()+i*DAY));if(d>=S.quit)return d===S.quit?'<li><span>'+esc(fdate(d))+'</span><b>Quit day</b></li>':'';return '<li><span>'+esc(fdate(d))+(i===0?" (today)":"")+'</span><b>'+target(d)+' max</b></li>';}).join("")+'</ul></div>';
+  }else{
+    const last=lastCigTime(),el=Date.now()-last;
+    const nx=MILES.find(m=>m[0]*36e5>el);
+    const days=Math.floor(el/DAY);
+    h='<div class="hero"><div class="haze" style="opacity:'+Math.max(0,.6-days/60).toFixed(2)+'"></div><div class="lbl">Smoke-free for</div><div class="num">'+days+'</div><div class="numsm">'+(days===1?"day":"days")+', '+esc(dur(el))+' in total</div>'+
+      (nx?'<div class="bar"><i style="width:'+Math.min(100,Math.round(el/(nx[0]*36e5)*100))+'%"></i></div><div class="lbl">Next health milestone: '+esc(nx[1])+'</div>':'')+'</div>';
+    const T=totals();
+    h+='<div class="stats"><div class="stat"><b>'+(perCig()?money(T.saved):"–")+'</b><span>money saved since you started</span></div><div class="stat"><b>'+T.notSmoked+'</b><span>cigarettes not smoked</span></div></div>';
+    h+='<div class="card counter"><div><h3>Had a cigarette?</h3><p class="sub" style="margin:0">Log it honestly. The health clock restarts from it, but a slip doesn\'t undo your progress. Pick up again straight away.</p></div><button class="btn alt" id="slip">Log it</button></div>';
+  }
+  $("todayBody").innerHTML=h;
+  const g=$("goMe");if(g)g.onclick=()=>show("me");
+  const pl=$("plus");if(pl)pl.onclick=()=>{const t=today();S.smoked[t]=(S.smoked[t]||0)+1;S.lastCig=Date.now();save();renderToday();};
+  const mi=$("minus");if(mi)mi.onclick=()=>{const t=today();if(S.smoked[t]>0){S.smoked[t]--;save();renderToday();}};
+  const sl=$("slip");if(sl)sl.onclick=()=>{if(!confirm("Log a cigarette now?"))return;const t=today();S.smoked[t]=(S.smoked[t]||0)+1;S.lastCig=Date.now();save();renderToday();};
+}
+
+/* ---------- CRAVINGS ---------- */
+let cv={s:null,t:null,smoked:null},bTimer=null,bEnd=0;
+function chipRow(el,opts,key){$(el).innerHTML=opts.map(o=>'<button class="chip" data-v="'+esc(o)+'" aria-pressed="'+(String(cv[key])===String(o))+'">'+esc(o)+'</button>').join("");}
+function renderCrave(){
+  chipRow("cStrength",["1 mild","2","3","4","5 very strong"],"s");
+  chipRow("cTrigger",TRIGGERS,"t");
+  chipRow("cSmoked",["No","Yes"],"smoked");
+  $("reasons").innerHTML=S.reasons.length?S.reasons.map((r,i)=>'<li><span>'+esc(r)+'</span><button class="x" data-rr="'+i+'">Remove</button></li>').join(""):'<li><span class="sub">Write down why you want to stop. Read it when a craving hits.</span></li>';
+  const last30=S.cravings.filter(c=>c.at>Date.now()-30*DAY);
+  if(last30.length){
+    const cnt={};last30.forEach(c=>{if(c.t)cnt[c.t]=(cnt[c.t]||0)+1;});
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]);const max=top.length?top[0][1]:1;
+    $("triggerStats").innerHTML='<p class="sub">'+last30.length+' cravings in the last 30 days. '+last30.filter(c=>c.smoked==="No").length+' beaten without smoking.</p>'+
+      top.map(([k,v])=>'<div style="margin:8px 0"><div class="row" style="justify-content:space-between"><span>'+esc(k)+'</span><b>'+v+'</b></div><div class="bar" style="margin:4px 0"><i style="width:'+Math.round(v/max*100)+'%"></i></div></div>').join("");
+  }else $("triggerStats").innerHTML='<p class="sub" style="margin:0">Log a few cravings to see your main triggers here.</p>';
+  $("craveLog").innerHTML=S.cravings.length?S.cravings.slice(0,40).map((c,i)=>'<li><span><b>'+esc(fdate(iso(c.at)))+', '+esc(ftime(c.at))+'</b><br><span class="sub">Strength '+esc(String(c.s||"–").charAt(0))+(c.t?", "+esc(c.t):"")+(c.smoked==="Yes"?", smoked":c.smoked==="No"?", beaten":"")+'</span></span><button class="x" data-cd="'+i+'">Delete</button></li>').join(""):'<li><span class="sub">Cravings you log will be listed here.</span></li>';
+}
+["cStrength","cTrigger","cSmoked"].forEach((id,ix)=>$(id).addEventListener("click",e=>{const b=e.target.closest(".chip");if(!b)return;const key=["s","t","smoked"][ix];cv[key]=cv[key]===b.dataset.v?null:b.dataset.v;renderCrave();}));
+$("saveCrave").onclick=()=>{
+  if(!cv.s&&!cv.t){$("craveMsg").textContent="Pick at least how strong it was or what set it off.";return;}
+  S.cravings.unshift({at:Date.now(),s:cv.s,t:cv.t,smoked:cv.smoked});S.cravings=S.cravings.slice(0,500);
+  if(cv.smoked==="Yes"){const t=today();S.smoked[t]=(S.smoked[t]||0)+1;S.lastCig=Date.now();}
+  $("craveMsg").textContent=cv.smoked==="No"?"Saved. Well done for getting through it.":"Saved.";
+  cv={s:null,t:null,smoked:null};save();renderCrave();
+};
+$("craveLog").addEventListener("click",e=>{const b=e.target.closest("[data-cd]");if(b&&confirm("Delete this craving?")){S.cravings.splice(+b.dataset.cd,1);save();renderCrave();}});
+$("reasons").addEventListener("click",e=>{const b=e.target.closest("[data-rr]");if(b){S.reasons.splice(+b.dataset.rr,1);save();renderCrave();}});
+$("addReason").onclick=()=>{const v=$("reasonIn").value.trim();if(!v)return;S.reasons.push(v);$("reasonIn").value="";save();renderCrave();};
+$("reasonIn").addEventListener("keydown",e=>{if(e.key==="Enter")$("addReason").click();});
+let actx=null,lastPh=null,wake=null;
+function tone(up){
+  try{
+    if(!actx)return;
+    const t=actx.currentTime,o=actx.createOscillator(),g=actx.createGain();
+    o.type="sine";o.frequency.setValueAtTime(up?196:294,t);o.frequency.linearRampToValueAtTime(up?294:196,t+3.6);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.25,t+0.4);g.gain.setValueAtTime(0.25,t+3.2);g.gain.exponentialRampToValueAtTime(0.0001,t+3.9);
+    o.connect(g).connect(actx.destination);o.start(t);o.stop(t+4);
+  }catch(e){}
+}
+let noiseBuf=null;
+function breathSound(inPhase){
+  // Filtered noise shaped like an airy breath: inhale brighter and rising, exhale softer and falling.
+  try{
+    if(!actx)return;
+    if(!noiseBuf){const len=actx.sampleRate*4;noiseBuf=actx.createBuffer(1,len,actx.sampleRate);const d=noiseBuf.getChannelData(0);let last=0;
+      for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+0.06*w)/1.06;d[i]=last*3.2;}} // brown-ish noise, less hiss
+    const t=actx.currentTime,src=actx.createBufferSource();src.buffer=noiseBuf;
+    const bp=actx.createBiquadFilter();bp.type="bandpass";bp.Q.value=0.7;
+    const lp=actx.createBiquadFilter();lp.type="lowpass";
+    const g=actx.createGain();
+    if(inPhase){
+      bp.frequency.setValueAtTime(500,t);bp.frequency.linearRampToValueAtTime(1100,t+3.4);
+      lp.frequency.setValueAtTime(1800,t);lp.frequency.linearRampToValueAtTime(3200,t+3.4);
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.5,t+1.2);g.gain.linearRampToValueAtTime(0.6,t+3.0);g.gain.exponentialRampToValueAtTime(0.0001,t+3.8);
+    }else{
+      bp.frequency.setValueAtTime(900,t);bp.frequency.linearRampToValueAtTime(400,t+3.6);
+      lp.frequency.setValueAtTime(2400,t);lp.frequency.linearRampToValueAtTime(1200,t+3.6);
+      g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.55,t+0.5);g.gain.linearRampToValueAtTime(0.3,t+2.8);g.gain.exponentialRampToValueAtTime(0.0001,t+3.8);
+    }
+    src.connect(bp).connect(lp).connect(g).connect(actx.destination);src.start(t);src.stop(t+3.9);
+  }catch(e){}
+}
+function say(txt){try{if(!window.speechSynthesis)return false;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.rate=0.8;u.pitch=0.9;speechSynthesis.speak(u);return true;}catch(e){return false;}}
+function cue(inPhase){
+  if(S.sound==="off")return;
+  if(S.sound==="voice"){if(!say(inPhase?"Breathe in":"Breathe out"))tone(inPhase);}
+  else if(S.sound==="breath")breathSound(inPhase);
+  else tone(inPhase);
+}
+function renderSound(){[...$("soundOpt").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.snd===(S.sound||"breath")));}
+$("soundOpt").addEventListener("click",e=>{const b=e.target.closest("[data-snd]");if(!b)return;S.sound=b.dataset.snd;save();renderSound();
+  if(S.sound==="voice"&&!window.speechSynthesis)$("craveMsg").textContent="Spoken words aren't available on this phone, so the soft tone will play instead.";});
+function breathTick(){
+  const left=Math.max(0,bEnd-Date.now());
+  $("ctimer").textContent=Math.floor(left/6e4)+":"+String(Math.floor(left%6e4/1e3)).padStart(2,"0");
+  const phaseIn=Math.floor((300000-left)/4000)%2===0;
+  if(phaseIn!==lastPh&&left>0){lastPh=phaseIn;cue(phaseIn);}
+  $("circle").classList.toggle("in",phaseIn);$("circleTxt").textContent=phaseIn?"Breathe in":"Breathe out";
+  if(left<=0){stopBreath();if(S.sound==='voice')say('Five minutes done. Well done.');else if(S.sound!=='off'){tone(true);}$("circleTxt").textContent="Done";$("craveMsg").textContent="Five minutes done. Log how it went above.";}
+}
+function stopBreath(){lastPh=null;try{if(window.speechSynthesis)speechSynthesis.cancel();}catch(e){}try{if(wake){wake.release();wake=null;}}catch(e){}clearInterval(bTimer);bTimer=null;$("startBreath").hidden=false;$("stopBreath").hidden=true;$("circle").classList.remove("in");$("circleTxt").textContent="Ready";$("ctimer").textContent="5:00";}
+$("startBreath").onclick=()=>{
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();}catch(e){actx=null;}
+  try{if(navigator.wakeLock)navigator.wakeLock.request("screen").then(w=>{wake=w;}).catch(()=>{});}catch(e){}
+  lastPh=null;bEnd=Date.now()+300000;$("startBreath").hidden=true;$("stopBreath").hidden=false;breathTick();bTimer=setInterval(breathTick,250);};
+$("stopBreath").onclick=stopBreath;
+
+/* ---------- NRT ---------- */
+let np=null;
+function renderNrt(){
+  $("nProduct").innerHTML=PRODUCTS.map(p=>'<button class="chip" data-p="'+p+'" aria-pressed="'+(np===p)+'">'+p+'</button>').join("");
+  const t=today();const todays=S.nrt.filter(x=>iso(x.at)===t);
+  const first=S.nrt.length?S.nrt[S.nrt.length-1].at:null;
+  const weeks=first?Math.floor((Date.now()-first)/(7*DAY)):0;
+  $("nrtStats").innerHTML='<div class="stat"><b>'+todays.length+'</b><span>used today</span></div><div class="stat"><b>'+(first?"Week "+(weeks+1):"–")+'</b><span>'+(first?"since first use, "+esc(fdate(iso(first))):"no NRT logged yet")+'</span></div>';
+  $("nrtToday").innerHTML=todays.length?todays.map(x=>'<li><span><b>'+esc(ftime(x.at))+'</b> '+esc(x.p)+(x.st?' <span class="sub">('+esc(x.st)+')</span>':'')+'</span><button class="x" data-nd="'+x.at+'">Delete</button></li>').join(""):'<li><span class="sub">Nothing logged today.</span></li>';
+  let rows="";
+  for(let i=0;i<14;i++){const d=iso(new Date(D(t).getTime()-i*DAY));const xs=S.nrt.filter(x=>iso(x.at)===d);if(!xs.length)continue;
+    const c={};xs.forEach(x=>c[x.p]=(c[x.p]||0)+1);
+    rows+='<li><span>'+esc(fdate(d))+'</span><span>'+Object.entries(c).map(([k,v])=>v+" "+esc(k.toLowerCase())).join(", ")+'</span></li>';}
+  $("nrtDays").innerHTML=rows?'<ul class="log">'+rows+'</ul>':'<p class="sub" style="margin:0">Your daily use will show here.</p>';
+}
+$("nProduct").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(b){np=np===b.dataset.p?null:b.dataset.p;renderNrt();}});
+$("saveNrt").onclick=()=>{if(!np){$("nrtMsg").textContent="Pick the product first.";return;}
+  S.nrt.unshift({at:Date.now(),p:np,st:$("nStrength").value.trim()});S.nrt=S.nrt.slice(0,2000);save();$("nrtMsg").textContent="Logged "+np.toLowerCase()+" at "+ftime(Date.now())+".";renderNrt();};
+$("nrtToday").addEventListener("click",e=>{const b=e.target.closest("[data-nd]");if(b&&confirm("Delete this entry?")){S.nrt=S.nrt.filter(x=>String(x.at)!==b.dataset.nd);save();renderNrt();}});
+
+/* ---------- HEALTH ---------- */
+function renderHealth(){
+  if(phase()!=="quit"){
+    $("healthSub").textContent=ready()?"These start counting from your quit date, "+fdate(S.quit)+", or your last cigarette after it.":"Set your quit date on My plan to start the clock.";
+    $("milestones").innerHTML='<div class="card">'+MILES.map(m=>'<div class="mile"><div class="dotm"></div><div><div class="t">'+esc(m[1])+'</div><div>'+esc(m[2])+'</div></div></div>').join("")+'</div>';return;}
+  const el=Date.now()-lastCigTime();let nextSet=false;
+  $("healthSub").textContent="Smoke-free for "+dur(el)+".";
+  $("milestones").innerHTML='<div class="card">'+MILES.map(m=>{const done=el>=m[0]*36e5;let cls=done?"done":"";if(!done&&!nextSet){cls="next";nextSet=true;}
+    return '<div class="mile '+cls+'"><div class="dotm"></div><div><div class="t">'+esc(m[1])+(done?", reached":cls==="next"?", in "+esc(dur(m[0]*36e5-el)):"")+'</div><div>'+esc(m[2])+'</div></div></div>';}).join("")+'</div>';
+}
+
+/* ---------- ME ---------- */
+function renderMe(){
+  $("sName").value=S.name||"";$("sPerDay").value=S.perDay||"";$("sStart").value=S.start||"";$("sQuit").value=S.quit||"";
+  $("sPrice").value=S.price==null?"":S.price;$("sPack").value=S.pack||"";$("sCur").value=S.cur||"";
+  [...$("sMode").children].forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===S.mode));
+  const grad=S.mode==="gradual";
+  $("startRow").style.display=grad?"":"none";$("cutNote").style.display=grad?"":"none";
+  $("modeHelp").textContent=grad?"Your daily limit drops a little each day until you reach zero on your quit date.":"Pick a day and stop completely. NHS Inform says it's always best to quit completely on a set date.";
+  let m="";
+  if(!grad){m=S.quit?"Quit date: "+fdate(S.quit)+".":"";}
+  else if(S.start&&S.quit){const d=Math.round((D(S.quit)-D(S.start))/DAY);
+    if(d<=0)m="The quit date must be after the start date.";
+    else if(d>42)m="That's "+d+" days of cutting down. NHS Inform advises a quit date within 6 weeks (42 days).";
+    else m=d+" days of cutting down, from "+S.perDay+" a day to none.";}
+  $("planMsg").textContent=m;
+}
+[["sName","name",v=>v.trim()],["sPerDay","perDay",v=>v?Math.max(1,Math.round(+v)):null],["sStart","start",v=>v||null],["sQuit","quit",v=>v||null],["sPrice","price",v=>v===""?null:Math.max(0,+v)],["sPack","pack",v=>v?Math.max(1,Math.round(+v)):20],["sCur","cur",v=>v.trim()]]
+ .forEach(([id,k,f])=>$(id).addEventListener("change",e=>{S[k]=f(e.target.value);if(!S.trackFrom)S.trackFrom=today();save();renderMe();renderToday();}));
+$("sMode").addEventListener("click",e=>{const b=e.target.closest("[data-m]");if(!b)return;S.mode=b.dataset.m;if(!S.trackFrom)S.trackFrom=today();save();renderMe();renderToday();});
+$("resetAll").onclick=()=>{if(confirm("Clear the plan and every log for this person? This can't be undone.")){S=blank();save();renderAll();}};
+
+/* ---------- NAV ---------- */
+function show(v){
+  document.querySelectorAll(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));
+  document.querySelectorAll(".tab").forEach(t=>{const on=t.dataset.v===v;t.classList.toggle("on",on);t.setAttribute("aria-current",on?"page":"false");});
+  window.scrollTo(0,0);renderAll();
+}
+document.querySelector("nav.tabs").addEventListener("click",e=>{const t=e.target.closest(".tab");if(t)show(t.dataset.v);});
+function renderAll(){renderToday();renderSound();renderCrave();renderNrt();renderHealth();renderMe();}
+if(!S.start){S.start=today();}
+if(!S.quit){S.quit=iso(new Date(Date.now()+28*DAY));}
+renderAll();
+setInterval(()=>{if($("v-today").classList.contains("on"))renderToday();if($("v-health").classList.contains("on"))renderHealth();},30000);
+document.addEventListener("visibilitychange",()=>{if(!document.hidden)renderAll();});
+</script>
+<script>
+if("serviceWorker" in navigator){window.addEventListener("load",()=>{navigator.serviceWorker.register("sw.js").catch(()=>{});});}
+</script>
+</body>
+</html>
